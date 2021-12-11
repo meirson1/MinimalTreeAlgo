@@ -31,8 +31,7 @@ class Graph {
     // uses visited[] and parent to detect
     // cycle in subgraph reachable
     // from vertex v.
-    Boolean isCyclicUtil(int v,
-                         Boolean visited[], int parent) {
+    Boolean isCyclicUtil(int v, Boolean visited[], int parent) {
         // Mark the current node as visited
         visited[v] = true;
         Integer i;

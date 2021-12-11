@@ -80,25 +80,28 @@ public class MST {
     void NewMst(int[] parents, int[][] graph, int[] saveIndexI, int[] saveIndexJ)
     {
         List<List<Integer>> adjListArray = convert(graph);
-        //int max=0;
-        //int indexI=0;
-        //int indexJ=0;
+        List<Integer> VofCycle=isCyclic(adjListArray);
+
         List<Edge> ed=new ArrayList<>();
         Edge temp=null;
-        for (int i = 1; i < parents.length; i++) {
-            temp=new Edge(parents[i],i,graph[i][parents[i]]);
+        int i;
+        for (i = 0; i < VofCycle.size()-1; i++) {
+            temp=new Edge(VofCycle.get(i),VofCycle.get(i+1),graph[VofCycle.get(i)][VofCycle.get(i+1)]);
             ed.add(temp);
         }
-        temp=new Edge(saveIndexI[0],saveIndexJ[0],graph[saveIndexI[0]][saveIndexJ[0]]);
-        //ed.add(temp);
-
-        for (int i = 0; i < ed.size(); i++) {//switch
-            if (temp.getDest()==ed.get(i).getSource()||temp.getSource()==ed.get(i).getDest()){//switch source with des
-                int tempS=ed.get(i).getDest();
-                ed.get(i).setDest(ed.get(i).getSource());
-                ed.get(i).setSource(tempS);
+        temp=new Edge(VofCycle.get(VofCycle.size()-1),VofCycle.get(0),graph[VofCycle.get(VofCycle.size()-1)][VofCycle.get(0)]);
+        ed.add(temp);
+        int max=0;
+        int indexI=0;
+        int indexJ=0;
+        for (int j = 0; j < ed.size(); j++) {
+            if (max<ed.get(j).getWeight()) {
+                max = ed.get(j).getWeight();
+                indexI = ed.get(j).getDest();
+                indexJ = ed.get(j).getSource();
             }
         }
+        removeEdge(graph,max,indexI,indexJ);
 
 //        for (int i = 0; i < ed.size(); i++) {
 //            if (max<ed.get(i).weight) {
@@ -171,6 +174,62 @@ public class MST {
         }
 
         return adjListArray;
+    }
+
+    Boolean isCyclicUtil(int v, Boolean[] visited, int parent, List<List<Integer>> adjListArray,List<Integer> listCycle) {
+        // Mark the current node as visited
+        visited[v] = true;
+        Integer i;
+
+        // Recur for all the vertices
+        // adjacent to this vertex
+        Iterator<Integer> it = adjListArray.get(v).iterator();
+        while (it.hasNext()) {
+            i = it.next();
+
+            // If an adjacent is not
+            // visited, then recur for that
+            // adjacent
+            if (!visited[i]) {
+                if (isCyclicUtil(i, visited, v, adjListArray, listCycle)) {
+                    listCycle.add(i);
+                    return true;
+                }
+            }
+
+            // If an adjacent is visited
+            // and not parent of current
+            // vertex, then there is a cycle.
+            else if (i != parent)
+                return true;
+        }
+        return false;
+    }
+
+    // Returns true if the graph
+    // contains a cycle, else false.
+    List<Integer> isCyclic(List<List<Integer>> adjListArray) {
+        List<Integer> SaveCycle=new ArrayList<>();
+        // Mark all the vertices as
+        // not visited and not part of
+        // recursion stack
+        Boolean[] visited = new Boolean[V];
+        for (int i = 0; i < V; i++)
+            visited[i] = false;
+
+        // Call the recursive helper
+        // function to detect cycle in
+        // different DFS trees
+        for (int u = 0; u < V; u++) {
+
+            // Don't recur for u if already visited
+            if (!visited[u])
+                if (isCyclicUtil(u, visited, -1,adjListArray,SaveCycle)) {
+                    SaveCycle.add(u);
+                    break;
+                }
+        }
+        return SaveCycle;
     }
 
     public LinkedList<Integer> FindCircleDfs(ArrayList<ArrayList<Integer>> adjListArray) {
