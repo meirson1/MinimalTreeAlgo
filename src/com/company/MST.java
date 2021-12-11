@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.*;
 public class MST {
 
-    private static final int V = 4;
+    private static final int V = 20;
 
     int minKey(int[] key, Boolean[] mstSet)
     {
@@ -73,11 +73,10 @@ public class MST {
                 }
         }
         // print the constructed MST
-        printMST(parent, graph);
         return parent;
     }
 
-    void NewMst(int[] parents, int[][] graph, int[] saveIndexI, int[] saveIndexJ)
+    void NewMst(int[][] graph)
     {
         List<List<Integer>> adjListArray = convert(graph);
         List<Integer> VofCycle=isCyclic(adjListArray);
@@ -102,58 +101,9 @@ public class MST {
             }
         }
         removeEdge(graph,max,indexI,indexJ);
+        Main.printGraph(graph);
 
-//        for (int i = 0; i < ed.size(); i++) {
-//            if (max<ed.get(i).weight) {
-//                max = ed.get(i).weight;
-//                indexI=ed.get(i).dest;
-//                indexJ=ed.get(i).source;
-//            }
-//        }
-//        removeEdge(graph,max,indexI,indexJ);
-//        String[][] color=new String[V][V];
-//        for (int i = 0; i < V; i++) {
-//            for (int j = i+1; j < V; j++) {
-//                if (graph[i][j]!=0) {
-//                    color[i][j] = "white";
-//                    color[j][i] = "white";
-//                }
-//            }
-//        }
-//        color[0][0]="gray";
-//        int max=0;
-//        for (int i = 0; i < adjListArray.size(); i++) {
-//            for (int j = 0; j < adjListArray.get(i).size(); j++) {
-//                if (color[adjListArray.get(i).get(j)][adjListArray.get(j).get(i)].equals("white")) {
-//                    color[i][j] = "gray";
-//                } else if (color[i][j] == "gray") {
-//                    while (graph[i][j] != parents[i]) {
-//                        if (max < graph[i][j])
-//                            max = graph[i][j];
-//                    }
-//                    break;
-//                }
-//            }
-//        }
-//        LinkedList<Integer> circle=FindCircleDfs(adjListArray);
-//        for (int i = 0; i < circle.size(); i++) {
-//            if (max > graph[circle.get(i)][circle.get(i+1)]) {
-//                max = graph[circle.get(i)][circle.get(i+1)];
-//                indexI=circle.get(i);
-//                indexJ=circle.get(i+1);
-//            }
-//        }
-        printGraph(graph);
     }
-
-    private void printGraph(int[][] graph) {
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
-                System.out.println(graph[i][j]);
-            }
-        }
-    }
-
     public static List<List<Integer>> convert(int[][] graph) {
         int l = graph[0].length;
         List<List<Integer>> adjListArray = new ArrayList<>(l);
@@ -230,21 +180,6 @@ public class MST {
                 }
         }
         return SaveCycle;
-    }
-
-    public LinkedList<Integer> FindCircleDfs(ArrayList<ArrayList<Integer>> adjListArray) {
-        LinkedList<Integer> circle=new LinkedList<Integer>();
-        circle.add(0);
-        int i=0;
-        int j=0;
-        while (adjListArray.get(i).get(j)!=null) {
-            if (!circle.contains(adjListArray.get(i).get(j))) {
-                circle.add(adjListArray.get(i).get(j));
-                i=adjListArray.get(i).get(j);
-            }else
-                j++;
-        }
-        return circle;
     }
 
     public void removeEdge(int[][] graph,int max,int i,int j){

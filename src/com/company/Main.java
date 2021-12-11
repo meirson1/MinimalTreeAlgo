@@ -1,37 +1,70 @@
 package com.company;
 
-import java.util.HashMap;
+//Name:Noam Meir ID:206379216
+//Name:Gal Levy ID:315828954
+
 import java.util.Random;
 
 public class Main {
 
-    static int N=4;
+    static int N=20;
 
     public static void main(String[] args) {
         MST t = new MST();
         Random rand = new Random();
-        int[][] graph = new int[][]{    {0,1,2,13},
-                                        {1,0,10,24},
-                                        {2,10,0,9},
-                                        {13,24,9,0}};
-//        for (int i = 0; i < N; i++) {
-//            for (int j = 1+i; j < N; j++) {
-//                if (i!=j)
-//                    graph[i][j]= 1+rand.nextInt(25);
-//            }
-//        }
-     //   setGraph(graph);
-        // Print the solution
-        int[] parents=t.primMST(graph);
+        int[][] graph = new int[N][N];
+        for (int i = 0; i < N ; i++) {
+            for (int j = i+1 ; j < N; j++) {
+               graph[i][j] = 10+rand.nextInt(15);
+               graph[j][i] = graph[i][j];
+            }
+        }
+        System.out.println("this matrix represent the original graph: ");
+        printGraph(graph);
+        System.out.println();
 
+        int[] parents=t.primMST(graph);
         Minimaltree(parents,graph);//create new graph minimal trees
 
-        int[] SaveIndexI = new int[1];
-        int[] SaveIndexJ = new int[1];
-        AddEdge(rand,parents,graph,SaveIndexI,SaveIndexJ);
+        System.out.println("this matrix represent the minimal set tree graph: ");
+        printGraph(graph);
+        System.out.println();
 
-        t.NewMst(parents,graph,SaveIndexI,SaveIndexJ);
+        System.out.println("the next matrices represent the minimal set tree graph with a spare edge  : ");
+        System.out.println("this matrix with spare edge that doesn't change the minimal set tree graph:");
+        int max = getMax(graph);
+        AddEdge(rand, max +1 ,parents,graph);
+        t.NewMst(graph);
+        System.out.println();
+
+        System.out.println("this matrix with spare edge that does change the minimal set tree graph:");
+        AddEdge(rand,1 ,parents,graph);
+        t.NewMst(graph);
+        System.out.println();
+
+
+
     }
+
+    public static int getMax(int[][] graph) {
+        int maxWieght = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = i + 1; j < N; j++) {
+                if(maxWieght < graph[i][j])
+                    maxWieght = graph[i][j];
+            }
+        }
+        return maxWieght;
+    }
+    public static void printGraph(int[][] graph) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                System.out.print(graph[i][j]+ " ");
+            }
+            System.out.println();
+        }
+    }
+
 
     public static void Minimaltree(int[] parents,int[][]graph)
     {
@@ -43,30 +76,22 @@ public class Main {
         }
     }
 
-    public static void setGraph(int[][] graph)
-    {
-        for (int i = 0; i < N; i++) {
-            for (int j = 1+i; j < N; j++) {
-                graph[j][i]=graph[i][j];
-            }
-        }
-    }
 
-    public static void AddEdge(Random rand, int[] parents, int[][] graph, int[] saveIndexI, int[] saveIndexJ)
+
+    public static void AddEdge(Random rand, int weight , int[] parents, int[][] graph)
     {
         boolean flag=false;
         do {
-            int weight=1+rand.nextInt(24);
             int indexI=1+rand.nextInt(N-1);
             int indexJ=1+rand.nextInt(N-1);
             if (graph[indexI][indexJ]!=weight && indexI!=indexJ)
             {
                 if (indexI!=parents[indexJ]) {
-                    saveIndexI[0]=indexI;
-                    saveIndexJ[0]=indexJ;
                     graph[indexI][indexJ]=weight;
                     graph[indexJ][indexI]=weight;
                     flag = true;
+                    System.out.println("The new edge is (" + indexI +"," + indexJ + ") with weight of " + weight);
+                    System.out.println();
                 }
             }
         }while (!flag);
